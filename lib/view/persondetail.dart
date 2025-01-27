@@ -179,7 +179,7 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.purple,
+                color: Colors.blueAccent,
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(16)),
               ),
@@ -228,7 +228,7 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
             child: FloatingActionButton(
               onPressed: _addTransaction,
               child: const Icon(Icons.add, size: 20), // Adjust the icon size
-              backgroundColor: Colors.purple,
+              backgroundColor: Colors.blueAccent,
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'dart:io'; // For File
+import 'dart:math'; // For OTP Generation
 import 'package:cleanapp/view/profile/login.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +16,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
 
-  // List to store groups (name and image path)
+  // List to store groups (name, image path, members, and OTP)
   final List<Map<String, String?>> _groups = [];
 
   final List<Widget> _pages = [
@@ -25,11 +26,16 @@ class _HomePageState extends State<HomePage> {
         child: Text("Notification Page", style: TextStyle(fontSize: 20))),
   ];
 
+  // Function to generate a random OTP
+  String generateOTP() {
+    final random = Random();
+    return (100000 + random.nextInt(900000)).toString(); // 6-digit OTP
+  }
+
   // Function to display Add Group dialog
   void _showAddGroupDialog() {
     final TextEditingController groupNameController = TextEditingController();
     XFile? selectedImage;
-    List<TextEditingController> memberControllers = [TextEditingController()];
 
     showDialog(
       context: context,
@@ -82,55 +88,6 @@ class _HomePageState extends State<HomePage> {
                       icon: const Icon(Icons.upload),
                       label: const Text("Upload Image"),
                     ),
-                    const SizedBox(height: 20),
-
-                    // Add Members Section
-                    const Text(
-                      "Add Members",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 10),
-                    Column(
-                      children: List.generate(
-                        memberControllers.length,
-                        (index) => Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                controller: memberControllers[index],
-                                decoration: InputDecoration(
-                                  labelText: "Member ${index + 1}",
-                                  border: const OutlineInputBorder(),
-                                ),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.remove_circle,
-                                  color: Colors.red),
-                              onPressed: () {
-                                if (memberControllers.length > 1) {
-                                  setDialogState(() {
-                                    memberControllers.removeAt(index);
-                                  });
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        onPressed: () {
-                          setDialogState(() {
-                            memberControllers.add(TextEditingController());
-                          });
-                        },
-                        icon: const Icon(Icons.add),
-                        label: const Text("Add Member"),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -146,28 +103,23 @@ class _HomePageState extends State<HomePage> {
                     if (groupNameController.text.isNotEmpty) {
                       String groupName = groupNameController.text;
                       String? imagePath = selectedImage?.path;
-
-                      // Collect member names
-                      List<String> members = memberControllers
-                          .map((controller) => controller.text)
-                          .where((name) => name.isNotEmpty)
-                          .toList();
+                      String otp = generateOTP();
 
                       // Add the new group to the list
                       setState(() {
                         _groups.add({
                           "name": groupName,
                           "image": imagePath,
-                          "members": members
-                              .join(", "), // Store members as comma-separated
+                          "otp": otp,
                         });
                       });
 
                       Navigator.pop(context); // Close dialog
+
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content:
-                              Text("Group '$groupName' added successfully!"),
+                          content: Text(
+                              "Group '$groupName' added successfully! OTP: $otp"),
                         ),
                       );
                     }
@@ -182,12 +134,69 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Function to join a group using OTP
+  void _showJoinGroupDialog() {
+    final TextEditingController otpController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Join Group"),
+          content: TextField(
+            controller: otpController,
+            decoration: const InputDecoration(
+              labelText: "Enter OTP",
+              border: OutlineInputBorder(),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                String otp = otpController.text;
+                final group = _groups.firstWhere(
+                  (group) => group["otp"] == otp,
+                  orElse: () => {},
+                );
+
+                if (group.isNotEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Joined group: ${group['name']}")),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Invalid OTP")),
+                  );
+                }
+
+                Navigator.pop(context); // Close dialog
+              },
+              child: const Text("Join"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Track_It"),
         backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.group_add),
+            onPressed: _showJoinGroupDialog, // Open Join Group dialog
+          ),
+        ],
       ),
       drawer: Drawer(
         child: ListView(
@@ -212,7 +221,7 @@ class _HomePageState extends State<HomePage> {
             ),
             ListTile(
               leading: const Icon(Icons.account_box),
-              title: const Text('account'),
+              title: const Text('Account'),
               onTap: () {
                 setState(() {
                   _currentIndex = 1;
@@ -234,7 +243,6 @@ class _HomePageState extends State<HomePage> {
               leading: const Icon(Icons.logout),
               title: const Text('LOGOUT'),
               onTap: () {
-                // Navigate to Login Page after logout
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(builder: (context) => LoginApp()),
@@ -246,8 +254,6 @@ class _HomePageState extends State<HomePage> {
       ),
       body: Stack(
         children: [
-          // Display groups on Home Page
-          // Display groups on Home Page
           if (_currentIndex == 0)
             ListView.builder(
               padding: const EdgeInsets.all(10),
@@ -265,8 +271,6 @@ class _HomePageState extends State<HomePage> {
                           )
                         : const Icon(Icons.group, size: 50),
                     title: Text(group["name"]!),
-                    subtitle:
-                        Text("Members: ${group["members"] ?? 'No members'}"),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -274,7 +278,7 @@ class _HomePageState extends State<HomePage> {
                           builder: (context) => GroupDetailsPage(
                             groupName: group["name"]!,
                             groupImage: group["image"],
-                            members: (group["members"] ?? '').split(", "),
+                            otp: group["otp"]!,
                           ),
                         ),
                       );
@@ -283,18 +287,13 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-
           _pages[_currentIndex],
-          if (_currentIndex == 0)
-            Positioned(
-              bottom: 20,
-              right: 20,
-              child: FloatingActionButton(
-                onPressed: _showAddGroupDialog,
-                child: const Icon(Icons.add),
-              ),
-            ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showAddGroupDialog, // Open Add Group dialog
+        child: const Icon(Icons.add),
+        backgroundColor: Colors.blueAccent,
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,

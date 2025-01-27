@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class GroupDetailsPage extends StatelessWidget {
   final String groupName;
   final String? groupImage;
-  final List<String> members;
+  final String otp;
 
   const GroupDetailsPage({
     super.key,
     required this.groupName,
     required this.groupImage,
-    required this.members,
+    required this.otp,
   });
 
   @override
@@ -27,29 +27,52 @@ class GroupDetailsPage extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        body: Column(
           children: [
-            // Chat Tab
-            Center(
+            if (groupImage != null)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Image.network(
+                  groupImage!,
+                  height: 150,
+                  width: 150,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Text(
-                "Chat Functionality Coming Soon",
-                style: TextStyle(fontSize: 16),
+                "Group OTP: $otp",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
               ),
             ),
-
-            // Schedule Tab
-            Center(
-              child: Text(
-                "Schedule Functionality Coming Soon",
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-
-            // Group Expenses Tab
-            Center(
-              child: Text(
-                "Expense Tracking Coming Soon",
-                style: TextStyle(fontSize: 16),
+            const Divider(),
+            Expanded(
+              child: TabBarView(
+                children: [
+                  Center(
+                    child: Text(
+                      "Chat Functionality Coming Soon",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      "Schedule Functionality Coming Soon",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      "Expense Tracking Coming Soon",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

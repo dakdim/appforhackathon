@@ -109,7 +109,7 @@ class _ExpensePageState extends State<ExpensePage> {
                             horizontal: 10, vertical: 6),
                         child: ListTile(
                           leading: CircleAvatar(
-                            backgroundColor: Colors.purple,
+                            backgroundColor: Colors.blueAccent,
                             child: Text(
                               person['name']![0].toUpperCase(),
                               style: const TextStyle(color: Colors.white),
