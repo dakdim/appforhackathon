@@ -1,4 +1,5 @@
 import 'dart:io'; // For File
+import 'package:cleanapp/view/profile/login.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cleanapp/view/expense.dart';
@@ -185,7 +186,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Flutter Home Page"),
+        title: const Text("Track_It"),
         backgroundColor: Colors.blue,
       ),
       drawer: Drawer(
@@ -200,8 +201,8 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
+              leading: const Icon(Icons.person_3),
+              title: const Text('Edit profile'),
               onTap: () {
                 setState(() {
                   _currentIndex = 0;
@@ -210,8 +211,8 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.money),
-              title: const Text('Expense'),
+              leading: const Icon(Icons.account_box),
+              title: const Text('account'),
               onTap: () {
                 setState(() {
                   _currentIndex = 1;
@@ -220,13 +221,24 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.notifications),
-              title: const Text('Notification'),
+              leading: const Icon(Icons.privacy_tip),
+              title: const Text('Privacy'),
               onTap: () {
                 setState(() {
                   _currentIndex = 2;
                 });
                 Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('LOGOUT'),
+              onTap: () {
+                // Navigate to Login Page after logout
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginApp()),
+                );
               },
             ),
           ],
