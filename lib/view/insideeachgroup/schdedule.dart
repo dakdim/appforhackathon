@@ -1,99 +1,83 @@
-import 'dart:collection';
+import 'package:flutter/material.dart';
 
-class Task {
-  String name;
-  String assignedMember;
-  bool isCompleted;
+class TaskSchedulerPage extends StatefulWidget {
+  @override
+  _TaskSchedulerPageState createState() => _TaskSchedulerPageState();
+}
 
-  Task(this.name, {this.assignedMember = '', this.isCompleted = false});
+class _TaskSchedulerPageState extends State<TaskSchedulerPage> {
+  final List<String> members = ['Alice', 'Bob', 'Charlie', 'Diana'];
+  final List<String> tasks = [
+    'Clean Kitchen',
+    'Take Out Trash',
+    'Vacuum',
+    'Water Plants'
+  ];
+  int currentTaskIndex = 0;
+
+  // Map to keep track of each member's current task
+  Map<String, String> assignedTasks = {};
 
   @override
-  String toString() {
-    return 'Task: $name, Assigned to: $assignedMember, Completed: $isCompleted';
+  void initState() {
+    super.initState();
+    assignTasks();
   }
-}
-
-class Scheduler {
-  List<String> members;
-  Queue<Task> tasks;
-  int currentMemberIndex;
-
-  Scheduler(this.members, List<Task> taskList)
-      : tasks = Queue.from(taskList),
-        currentMemberIndex = 0;
 
   void assignTasks() {
-    while (tasks.any((task) => !task.isCompleted)) {
-      for (var task in tasks) {
-        if (!task.isCompleted) {
-          task.assignedMember = members[currentMemberIndex];
-          print('Assigned "${task.name}" to ${members[currentMemberIndex]}');
-          currentMemberIndex = (currentMemberIndex + 1) % members.length;
-        }
+    setState(() {
+      for (var member in members) {
+        assignedTasks[member] = tasks[currentTaskIndex];
+        currentTaskIndex = (currentTaskIndex + 1) % tasks.length;
       }
-    }
+    });
   }
 
-  void completeTask(String taskName) {
-    for (var task in tasks) {
-      if (task.name == taskName && !task.isCompleted) {
-        task.isCompleted = true;
-        print(
-            'Task "${task.name}" marked as completed by ${task.assignedMember}');
-        return;
-      }
-    }
-    print('Task "$taskName" not found or already completed.');
+  void completeTask(String member) {
+    setState(() {
+      assignedTasks[member] = tasks[currentTaskIndex];
+      currentTaskIndex = (currentTaskIndex + 1) % tasks.length;
+    });
   }
 
-  void reassignTasks() {
-    for (var task in tasks) {
-      if (!task.isCompleted) {
-        assignTasks();
-      }
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            'Task Assignments:',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: members.length,
+            itemBuilder: (context, index) {
+              final member = members[index];
+              return ListTile(
+                title: Text('$member'),
+                subtitle: Text('Task: ${assignedTasks[member]}'),
+                trailing: ElevatedButton(
+                  onPressed: () => completeTask(member),
+                  child: Text('Complete'),
+                ),
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: ElevatedButton(
+              onPressed: assignTasks,
+              child: Text('Reassign Tasks'),
+            ),
+          ),
+        ),
+      ],
+    );
   }
-
-  void printStatus() {
-    print('\nCurrent Task Status:');
-    for (var task in tasks) {
-      print(task);
-    }
-    print('');
-  }
-}
-
-void main() {
-  // Members
-  List<String> members = ['Alice', 'Bob', 'Charlie'];
-
-  // Task List
-  List<Task> tasks = [
-    Task('Clean the room'),
-    Task('Write a report'),
-    Task('Prepare presentation'),
-  ];
-
-  // Create Scheduler
-  Scheduler scheduler = Scheduler(members, tasks);
-
-  // Assign Tasks
-  print('Initial Task Assignment:');
-  scheduler.assignTasks();
-
-  // Show Status
-  scheduler.printStatus();
-
-  // Complete a Task
-  scheduler.completeTask('Write a report');
-
-  // Show Updated Status
-  scheduler.printStatus();
-
-  // Reassign Remaining Tasks
-  print('Reassigning Remaining Tasks:');
-  scheduler.reassignTasks();
-
-  // Show Final Status
-  scheduler.printStatus();
 }

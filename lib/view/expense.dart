@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'persondetail.dart'; // Import the new page
+import 'persondetail.dart'; // Import PersonDetailsPage
 
 class ExpensePage extends StatefulWidget {
   const ExpensePage({super.key});
@@ -12,7 +12,7 @@ class _ExpensePageState extends State<ExpensePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  final List<Map<String, String>> _persons = [];
+  List<Map<String, String>> _people = [];
 
   @override
   void dispose() {
@@ -27,7 +27,7 @@ class _ExpensePageState extends State<ExpensePage> {
       builder: (context) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
           ),
           title: const Text('Add Person'),
           content: Column(
@@ -58,7 +58,7 @@ class _ExpensePageState extends State<ExpensePage> {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context); // Close dialog
+                Navigator.pop(context);
               },
               child: const Text('Cancel'),
             ),
@@ -67,14 +67,14 @@ class _ExpensePageState extends State<ExpensePage> {
                 if (_nameController.text.isNotEmpty &&
                     _emailController.text.isNotEmpty) {
                   setState(() {
-                    _persons.add({
+                    _people.add({
                       'name': _nameController.text,
                       'email': _emailController.text,
                     });
                   });
                   _nameController.clear();
                   _emailController.clear();
-                  Navigator.pop(context); // Close dialog
+                  Navigator.pop(context);
                 }
               },
               child: const Text('Add'),
@@ -85,58 +85,43 @@ class _ExpensePageState extends State<ExpensePage> {
     );
   }
 
+  void _navigateToDetails(String name) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PersonDetailsPage(name: name),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: _persons.isEmpty
-                ? const Center(
-                    child: Text(
-                      'No persons added yet.\nTap the "+" button to add a person.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: _persons.length,
-                    itemBuilder: (context, index) {
-                      final person = _persons[index];
-                      return Card(
-                        elevation: 4,
-                        margin: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 6),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.blueAccent,
-                            child: Text(
-                              person['name']![0].toUpperCase(),
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                          title: Text(
-                            person['name']!,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          subtitle: Text(person['email']!),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PersonDetailsPage(
-                                  name: person['name']!,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
+      appBar: AppBar(
+        title: const Text("Expense Tracker"),
+        backgroundColor: Colors.blueAccent,
+        foregroundColor: Colors.white,
       ),
+      body: _people.isEmpty
+          ? const Center(child: Text("No people added yet!"))
+          : ListView.builder(
+              itemCount: _people.length,
+              itemBuilder: (context, index) {
+                final person = _people[index];
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: ListTile(
+                    title: Text(
+                      person['name']!,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle: Text(person['email']!),
+                    onTap: () => _navigateToDetails(person['name']!),
+                  ),
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: _addPerson,
         backgroundColor: Colors.blueAccent,

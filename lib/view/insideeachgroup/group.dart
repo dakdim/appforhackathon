@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:flutter/cleanapp/view/inisdeeachgroup/schedule.dart';
 
 class GroupDetailsPage extends StatelessWidget {
   final String groupName;
