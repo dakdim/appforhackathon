@@ -20,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   final List<Map<String, String?>> _groups = [];
 
   final List<Widget> _pages = [
-    const Center(child: Text("Home Page", style: TextStyle(fontSize: 20))),
+    const Center(),
     const ExpensePage(),
     const Center(
         child: Text("Notification Page", style: TextStyle(fontSize: 20))),
@@ -51,9 +51,11 @@ class _HomePageState extends State<HomePage> {
                     // Group Name Input
                     TextField(
                       controller: groupNameController,
+                      maxLength: 15, // Limits input to 15 characters
                       decoration: const InputDecoration(
                         labelText: "Group Name",
                         border: OutlineInputBorder(),
+                        counterText: "", // Hides the character count display
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -279,6 +281,7 @@ class _HomePageState extends State<HomePage> {
                             groupName: group["name"]!,
                             groupImage: group["image"],
                             otp: group["otp"]!,
+                            members: [""],
                           ),
                         ),
                       );

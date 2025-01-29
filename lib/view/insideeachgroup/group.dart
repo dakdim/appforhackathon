@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'schedule.dart'; // Ensure correct spelling in import
+import 'schedule.dart';
+import 'memberspage.dart';
+import 'chat.dart';
 
 class GroupDetailsPage extends StatelessWidget {
   final String groupName;
   final String? groupImage;
   final String otp;
+  final List<String> members;
 
   const GroupDetailsPage({
     super.key,
     required this.groupName,
     required this.groupImage,
     required this.otp,
+    required this.members,
   });
 
   @override
@@ -19,7 +23,62 @@ class GroupDetailsPage extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(groupName),
+          title: Row(
+            children: [
+              Text(groupName),
+              const SizedBox(width: 8), // Add some spacing
+              Text(
+                otp,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue, // Differentiate OTP color
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (String result) {
+                if (result == "members") {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MembersPage(members: members),
+                    ),
+                  );
+                } else if (result == "leave") {
+                  // TODO: Handle Leave Group
+                } else if (result == "delete") {
+                  // TODO: Handle Delete Group (Admin Only)
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: "members",
+                  child: ListTile(
+                    leading: Icon(Icons.people, color: Colors.blue),
+                    title: Text("Members"),
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: "leave",
+                  child: ListTile(
+                    leading: Icon(Icons.exit_to_app, color: Colors.orange),
+                    title: Text("Leave Group"),
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: "delete",
+                  child: ListTile(
+                    leading: Icon(Icons.delete, color: Colors.red),
+                    title: Text("Delete Group"),
+                  ),
+                ),
+              ],
+            ),
+          ],
           bottom: const TabBar(
             tabs: [
               Tab(icon: Icon(Icons.chat), text: "Chat"),
@@ -43,28 +102,11 @@ class GroupDetailsPage extends StatelessWidget {
                   },
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                "Group OTP: $otp",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue,
-                ),
-              ),
-            ),
-            const Divider(),
             Expanded(
               child: TabBarView(
                 children: [
-                  const Center(
-                    child: Text(
-                      "Chat Functionality Coming Soon",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  SchedulePage(), // Ensure SchedulePage is correctly imported
+                  const ChatPage(),
+                  const SchedulePage(),
                   const Center(
                     child: Text(
                       "Expense Tracking Coming Soon",
