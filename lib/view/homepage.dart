@@ -290,11 +290,13 @@ class _HomePageState extends State<HomePage> {
           _pages[_currentIndex],
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showAddGroupDialog, // Open Add Group dialog
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.blueAccent,
-      ),
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton(
+              onPressed: _showAddGroupDialog, // Open Add Group dialog
+              child: const Icon(Icons.add),
+              backgroundColor: Colors.blueAccent,
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {

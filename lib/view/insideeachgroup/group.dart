@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter/cleanapp/view/inisdeeachgroup/schedule.dart';
+import 'schedule.dart'; // Ensure correct spelling in import
 
 class GroupDetailsPage extends StatelessWidget {
   final String groupName;
@@ -30,7 +30,7 @@ class GroupDetailsPage extends StatelessWidget {
         ),
         body: Column(
           children: [
-            if (groupImage != null)
+            if (groupImage != null && groupImage!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Image.network(
@@ -38,6 +38,9 @@ class GroupDetailsPage extends StatelessWidget {
                   height: 150,
                   width: 150,
                   fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.image_not_supported, size: 100);
+                  },
                 ),
               ),
             Padding(
@@ -55,19 +58,14 @@ class GroupDetailsPage extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 children: [
-                  Center(
+                  const Center(
                     child: Text(
                       "Chat Functionality Coming Soon",
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
-                  Center(
-                    child: Text(
-                      "Schedule Functionality Coming Soon",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
-                  Center(
+                  SchedulePage(), // Ensure SchedulePage is correctly imported
+                  const Center(
                     child: Text(
                       "Expense Tracking Coming Soon",
                       style: TextStyle(fontSize: 16),

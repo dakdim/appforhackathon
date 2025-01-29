@@ -130,109 +130,100 @@ class _PersonDetailsPageState extends State<PersonDetailsPage> {
     double balance = creditSum - debitSum;
 
     return Scaffold(
-      body: Stack(children: [
-        Column(
-          children: [
-            AppBar(
-              title: Text(widget.name),
-              backgroundColor: Colors.white,
-              foregroundColor: Colors.black,
-              elevation: 0,
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _transactions.length,
-                itemBuilder: (context, index) {
-                  final transaction = _transactions[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    child: ListTile(
-                      title: Text(
-                        transaction['particular'],
-                        style: TextStyle(
-                          color: transaction['type'] == 'Credit'
-                              ? Colors.green
-                              : Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text(transaction['date']),
-                      trailing: Text(
-                        transaction['type'] == 'Credit'
-                            ? '+${transaction['amount']}'
-                            : '-${transaction['amount']}',
-                        style: TextStyle(
-                          color: transaction['type'] == 'Credit'
-                              ? Colors.green
-                              : Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
+      body: Column(
+        children: [
+          AppBar(
+            title: Text(widget.name),
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            elevation: 0,
+            actions: [
+              IconButton(
+                onPressed: _addTransaction,
+                icon: const Icon(Icons.add, color: Colors.blueAccent),
+              ),
+            ],
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _transactions.length,
+              itemBuilder: (context, index) {
+                final transaction = _transactions[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  child: ListTile(
+                    title: Text(
+                      transaction['particular'],
+                      style: TextStyle(
+                        color: transaction['type'] == 'Credit'
+                            ? Colors.green
+                            : Colors.red,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  );
-                },
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.blueAccent,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Credit(↑): Rs ${creditSum.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white),
+                    subtitle: Text(transaction['date']),
+                    trailing: Text(
+                      transaction['type'] == 'Credit'
+                          ? '+${transaction['amount']}'
+                          : '-${transaction['amount']}',
+                      style: TextStyle(
+                        color: transaction['type'] == 'Credit'
+                            ? Colors.green
+                            : Colors.red,
+                        fontWeight: FontWeight.bold,
                       ),
-                      Text(
-                        'Debit(↓): Rs ${debitSum.toStringAsFixed(2)}',
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    ],
+                    ),
                   ),
-                  Column(
-                    children: [
-                      const Text(
-                        'Balance',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      Text(
-                        'Rs ${balance.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Positioned(
-          top: 10,
-          right: 20,
-          child: SizedBox(
-            width: 40, // Adjust the size as needed
-            height: 40,
-            child: FloatingActionButton(
-              onPressed: _addTransaction,
-              child: const Icon(Icons.add, size: 20), // Adjust the icon size
-              backgroundColor: Colors.blueAccent,
+                );
+              },
             ),
           ),
-        ),
-      ]),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.blueAccent,
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Credit(↑): Rs ${creditSum.toStringAsFixed(2)}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    Text(
+                      'Debit(↓): Rs ${debitSum.toStringAsFixed(2)}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    const Text(
+                      'Balance',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    Text(
+                      'Rs ${balance.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

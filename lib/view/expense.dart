@@ -97,11 +97,7 @@ class _ExpensePageState extends State<ExpensePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Expense Tracker"),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(),
       body: _people.isEmpty
           ? const Center(child: Text("No people added yet!"))
           : ListView.builder(
