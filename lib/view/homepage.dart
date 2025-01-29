@@ -22,8 +22,7 @@ class _HomePageState extends State<HomePage> {
   final List<Widget> _pages = [
     const Center(),
     const ExpensePage(),
-    const Center(
-        child: Text("Notification Page", style: TextStyle(fontSize: 20))),
+    const Center(),
   ];
 
   // Function to generate a random OTP

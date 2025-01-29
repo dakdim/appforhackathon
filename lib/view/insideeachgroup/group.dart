@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'schedule.dart';
 import 'memberspage.dart';
 import 'chat.dart';
+import 'groupexpense.dart';
 
 class GroupDetailsPage extends StatelessWidget {
   final String groupName;
@@ -107,12 +108,7 @@ class GroupDetailsPage extends StatelessWidget {
                 children: [
                   const ChatPage(),
                   const SchedulePage(),
-                  const Center(
-                    child: Text(
-                      "Expense Tracking Coming Soon",
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
+                  GroupExpensePage(),
                 ],
               ),
             ),

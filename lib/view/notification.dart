@@ -14,6 +14,8 @@ class _NotificationPageState extends State<NotificationPage> {
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  List<Map<String, dynamic>> _notifications = [];
+
   @override
   void initState() {
     super.initState();
@@ -56,7 +58,7 @@ class _NotificationPageState extends State<NotificationPage> {
         android: AndroidNotificationDetails(
           'task_channel_id',
           'Task Notifications',
-          channelDescription: 'Notifications for scheduled tasks',
+          channelDescription: 'Task reminders',
           importance: Importance.max,
           priority: Priority.high,
         ),
@@ -65,10 +67,17 @@ class _NotificationPageState extends State<NotificationPage> {
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
     );
+
+    setState(() {
+      _notifications.add({
+        "title": title,
+        "body": body,
+        "scheduledTime": scheduledTime,
+      });
+    });
   }
 
-  void _addTask() {
-    final memberNameController = TextEditingController();
+  void _addNotification() {
     final taskController = TextEditingController();
     DateTime? selectedTime;
 
@@ -78,84 +87,70 @@ class _NotificationPageState extends State<NotificationPage> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: const Text('Add Task'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextField(
-                      controller: memberNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Member Name',
-                        border: OutlineInputBorder(),
-                      ),
+              title: const Text('Schedule Notification'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: taskController,
+                    decoration: const InputDecoration(
+                      labelText: 'Task',
+                      border: OutlineInputBorder(),
                     ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: taskController,
-                      decoration: const InputDecoration(
-                        labelText: 'Task',
-                        border: OutlineInputBorder(),
-                      ),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final time = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
+                      if (time != null) {
+                        final now = DateTime.now();
+                        setState(() {
+                          selectedTime = DateTime(
+                            now.year,
+                            now.month,
+                            now.day,
+                            time.hour,
+                            time.minute,
+                          );
+                        });
+                      }
+                    },
+                    child: Text(
+                      selectedTime == null
+                          ? 'Select Time'
+                          : 'Selected: ${selectedTime!.hour}:${selectedTime!.minute}',
                     ),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () async {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                        );
-                        if (time != null) {
-                          final now = DateTime.now();
-                          setState(() {
-                            selectedTime = DateTime(
-                              now.year,
-                              now.month,
-                              now.day,
-                              time.hour,
-                              time.minute,
-                            );
-                          });
-                        }
-                      },
-                      child: Text(
-                        selectedTime == null
-                            ? 'Select Time'
-                            : 'Selected: ${selectedTime!.hour}:${selectedTime!.minute}',
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               actions: [
                 TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
+                  onPressed: () => Navigator.pop(context),
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    if (memberNameController.text.isNotEmpty &&
-                        taskController.text.isNotEmpty &&
+                    if (taskController.text.isNotEmpty &&
                         selectedTime != null) {
                       _scheduleNotification(
-                        title: 'Task Reminder',
-                        body:
-                            '${memberNameController.text}: ${taskController.text}',
+                        title: 'Reminder',
+                        body: taskController.text,
                         scheduledTime: selectedTime!,
                       );
                       Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content:
-                              Text('Please fill all fields and select a time.'),
+                          content: Text('Please enter task and select a time.'),
+                          backgroundColor: Colors.red,
                         ),
                       );
                     }
                   },
-                  child: const Text('Add'),
+                  child: const Text('Schedule'),
                 ),
               ],
             );
@@ -172,11 +167,37 @@ class _NotificationPageState extends State<NotificationPage> {
         title: const Text('Notifications'),
         backgroundColor: Colors.blueAccent,
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: _addTask,
-          child: const Text('Add Task & Schedule Notification'),
-        ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: ElevatedButton(
+              onPressed: _addNotification,
+              child: const Text('Add Notification'),
+            ),
+          ),
+          Expanded(
+            child: _notifications.isEmpty
+                ? const Center(child: Text('No Notifications Scheduled'))
+                : ListView.builder(
+                    itemCount: _notifications.length,
+                    itemBuilder: (context, index) {
+                      final notification = _notifications[index];
+                      return Card(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
+                        elevation: 3,
+                        child: ListTile(
+                          leading: const Icon(Icons.notifications),
+                          title: Text(notification["title"]),
+                          subtitle: Text(
+                              '${notification["body"]} at ${notification["scheduledTime"]}'),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
