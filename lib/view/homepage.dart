@@ -18,9 +18,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+  final List<Map<String, String?>> _groups = [];
+  File? _profileImage;
 
   // List to store groups (name, image path, members, and OTP)
-  final List<Map<String, String?>> _groups = [];
+  // final List<Map<String, String?>> _groups = [];
 
   final List<Widget> _pages = [
     const Center(),
@@ -32,6 +34,17 @@ class _HomePageState extends State<HomePage> {
   String generateOTP() {
     final random = Random();
     return (100000 + random.nextInt(900000)).toString(); // 6-digit OTP
+  }
+
+  Future<void> _pickProfileImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      setState(() {
+        _profileImage = File(image.path);
+      });
+    }
   }
 
   // Function to display Add Group dialog
@@ -206,11 +219,31 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text(
-                'PROFILE',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+            DrawerHeader(
+              decoration: const BoxDecoration(color: Colors.blue),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  GestureDetector(
+                    onTap: _pickProfileImage,
+                    child: CircleAvatar(
+                      radius: 40,
+                      backgroundColor: Colors.white,
+                      backgroundImage: _profileImage != null
+                          ? FileImage(_profileImage!)
+                          : null,
+                      child: _profileImage == null
+                          ? const Icon(Icons.camera_alt,
+                              size: 40, color: Colors.grey)
+                          : null,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Your Profile',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ],
               ),
             ),
             ListTile(
@@ -286,7 +319,7 @@ class _HomePageState extends State<HomePage> {
                         MaterialPageRoute(
                           builder: (context) => GroupDetailsPage(
                             groupName: group["name"]!,
-                            groupImage: group["image"],
+                            // groupImage: group["image"],
                             otp: group["otp"]!,
                             members: [""],
                           ),

@@ -1,7 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final File? profileImage; // Receive profile image from HomePage
+
+  const ChatPage({super.key, this.profileImage});
 
   @override
   _ChatPageState createState() => _ChatPageState();
@@ -43,37 +46,36 @@ class _ChatPageState extends State<ChatPage> {
                 return ListTile(
                   title: Text(_messages[index]),
                   leading: CircleAvatar(
-                    // Replace this with the user's profile image (network or asset)
-                    backgroundImage: NetworkImage(
-                        'https://www.example.com/profile.jpg'), // Replace with actual URL or asset path
-                    radius: 20, // Adjust the size of the avatar
+                    backgroundImage: widget.profileImage != null
+                        ? FileImage(widget.profileImage!)
+                        : AssetImage('assets/default_profile.png')
+                            as ImageProvider, // Fallback image
+                    radius: 20,
                   ),
                 );
               },
             ),
           ),
-          SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _messageController,
-                      focusNode: _focusNode, // Attach FocusNode here
-                      decoration: const InputDecoration(
-                        hintText: "Enter message",
-                        border: OutlineInputBorder(),
-                      ),
-                      onSubmitted: (_) => _sendMessage(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _messageController,
+                    focusNode: _focusNode, // Attach FocusNode here
+                    decoration: const InputDecoration(
+                      hintText: "Enter message",
+                      border: OutlineInputBorder(),
                     ),
+                    onSubmitted: (_) => _sendMessage(),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.send),
-                    onPressed: _sendMessage,
-                  ),
-                ],
-              ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send),
+                  onPressed: _sendMessage,
+                ),
+              ],
             ),
           ),
         ],

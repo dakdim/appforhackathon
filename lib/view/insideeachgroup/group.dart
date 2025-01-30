@@ -6,14 +6,14 @@ import 'groupexpense.dart';
 
 class GroupDetailsPage extends StatelessWidget {
   final String groupName;
-  final String? groupImage;
+  // final String? groupImage;
   final String otp;
   final List<String> members;
 
   const GroupDetailsPage({
     super.key,
     required this.groupName,
-    required this.groupImage,
+    // required this.groupImage,
     required this.otp,
     required this.members,
   });
@@ -90,19 +90,6 @@ class GroupDetailsPage extends StatelessWidget {
         ),
         body: Column(
           children: [
-            if (groupImage != null && groupImage!.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Image.network(
-                  groupImage!,
-                  height: 150,
-                  width: 150,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.image_not_supported, size: 100);
-                  },
-                ),
-              ),
             Expanded(
               child: TabBarView(
                 children: [

@@ -1,4 +1,5 @@
-import 'package:cleanapp/view/homepage.dart';
+// import 'package:cleanapp/view/homepage.dart';
+import 'package:cleanapp/view/profile/login.dart';
 import 'package:flutter/material.dart';
 // import 'package:cleanapp/view/expense.dart';
 
@@ -17,8 +18,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:
-          const HomePage(), // Use HomePage from homepage.dart as the home screen
+      home: LoginPage(), // Use HomePage from homepage.dart as the home screen
     );
   }
 }
