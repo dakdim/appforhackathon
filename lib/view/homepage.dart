@@ -1,10 +1,13 @@
 import 'dart:io'; // For File
 import 'dart:math'; // For OTP Generation
+
 import 'package:cleanapp/view/profile/login.dart';
+import 'package:cleanapp/view/profile/privacy.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cleanapp/view/expense.dart';
 import 'package:cleanapp/view/insideeachgroup/group.dart';
+// import 'package:cleanapp/view/profile/editprofile.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -206,47 +209,52 @@ class _HomePageState extends State<HomePage> {
             const DrawerHeader(
               decoration: BoxDecoration(color: Colors.blue),
               child: Text(
-                'Navigation Menu',
+                'PROFILE',
                 style: TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.person_3),
-              title: const Text('Edit profile'),
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
               onTap: () {
-                setState(() {
-                  _currentIndex = 0;
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_box),
-              title: const Text('Account'),
-              onTap: () {
-                setState(() {
-                  _currentIndex = 1;
-                });
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.privacy_tip),
-              title: const Text('Privacy'),
-              onTap: () {
-                setState(() {
-                  _currentIndex = 2;
-                });
-                Navigator.pop(context);
+                Navigator.pop(context); // Closes Drawer
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Setting()),
+                );
               },
             ),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text('LOGOUT'),
               onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginApp()),
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text("Confirm Logout"),
+                      content: const Text("Are you sure you want to logout?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context); // Close dialog
+                          },
+                          child: const Text("Cancel"),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context); // Close dialog
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginApp()),
+                            );
+                          },
+                          child: const Text("Logout"),
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
             ),

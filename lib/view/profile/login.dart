@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cleanapp/view/profile/signup.dart';
 import 'package:cleanapp/view/profile/forgetpassword.dart';
+import 'package:cleanapp/view/homepage.dart';
 
 void main() {
   runApp(LoginApp());
@@ -28,11 +29,23 @@ class _LoginPageState extends State<LoginPage> {
 
   void _login() {
     if (_formKey.currentState!.validate()) {
-      // Perform login logic here
       String email = _emailController.text;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Logged in as $email')),
-      );
+      String password = _passwordController.text;
+
+      if (email == "shailesh@gmail.com" && password == "123asd") {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Login successful!')),
+        );
+        // Navigate to home screen or dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid email or password')),
+        );
+      }
     }
   }
 

@@ -12,7 +12,8 @@ class _ExpensePageState extends State<ExpensePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
 
-  List<Map<String, String>> _people = [];
+  List<Map<String, dynamic>> _people =
+      []; // Change to dynamic to include balance
 
   @override
   void dispose() {
@@ -70,6 +71,7 @@ class _ExpensePageState extends State<ExpensePage> {
                     _people.add({
                       'name': _nameController.text,
                       'email': _emailController.text,
+                      'balance': 0.0, // Add balance field
                     });
                   });
                   _nameController.clear();
@@ -86,10 +88,14 @@ class _ExpensePageState extends State<ExpensePage> {
   }
 
   void _navigateToDetails(String name) {
+    final person = _people.firstWhere((p) => p['name'] == name);
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PersonDetailsPage(name: name),
+        builder: (context) => PersonDetailsPage(
+          name: person['name'],
+          balance: person['balance'], // Pass the balance
+        ),
       ),
     );
   }
@@ -109,11 +115,11 @@ class _ExpensePageState extends State<ExpensePage> {
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   child: ListTile(
                     title: Text(
-                      person['name']!,
+                      person['name'],
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    subtitle: Text(person['email']!),
-                    onTap: () => _navigateToDetails(person['name']!),
+                    subtitle: Text(person['email']),
+                    onTap: () => _navigateToDetails(person['name']),
                   ),
                 );
               },
